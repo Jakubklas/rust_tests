@@ -1,69 +1,43 @@
-
-struct Player {
-    name: String,
-    hp: i32,
-    hunger: i32,
-}
-
-impl Player {
-    fn new(name: &str) -> Player{
-        Player {
-            name: String::from(name),
-            hp: 100,
-            hunger: 0
-        }
-    }
-
-    fn get_hungry(&mut self) {
-        self.hunger += 10;
-        if self.hunger >=100 {
-            println!("DEAD!!! - Starved to death.");
-            return;
-        }
-    }
-
-    fn eat(&mut self) {
-        self.get_hungry();
-        self.hunger = (self.hunger - 30).max(0);
-        self.status();
-    }
-
-    fn take_damage(&mut self, damage: i32) {
-        println!("Took {damage} damage.");
-        self.get_hungry();
-
-        self.hp -= damage;
-        if self.hp <= 0 {
-            println!("DEAD!!! - Killed.");
-            return;
-        }
-        self.status();
-        }
-    
-    fn heal(&mut self, hp: i32) {
-        println!("Healed {hp} HP points.");
-        self.get_hungry();
-        self.hp = (self.hp + hp).min(100);
-        self.status();
-        }
-
-    fn status(&self) {
-        println!("{} --> HP: {}, Hunger: {}", self.name, self.hp, self.hunger);
-        }
-    }
-
-
-
-
 fn main() {
-    let mut joe = Player::new("Joe");
+    let inputs = vec!["25.5", "invalid", "30.0", "abc", "-5.5"];
+    
+    for input in inputs {
+        // TODO: Call parse_temp and handle Result with match
+        // If Ok(temp), convert and print
+        // If Err(msg), print the error
+        let result = parse_temp(input);
 
-    joe.take_damage(40);
-    joe.heal(30);
-    joe.eat();
-    joe.take_damage(10);
-    joe.take_damage(20);
-    joe.take_damage(50);
-    joe.heal(60);
-    joe.eat();
+        match result {
+            Ok(temp) => println!("{} -> {:?}", input, temp),
+            Err(msg) => println!("{} -> {:?}", input, msg),
+        }
+    }
 }
+
+// TODO: Write this function
+// Returns Result<f32, String>
+// Ok(parsed_value) if valid, Err("error message") if invalid
+fn parse_temp(input: &str) -> Result<f32, String> {
+    // Hint: input.parse::<f32>() returns Result<f32, ParseFloatError>
+    // You can use match on that result
+    // Return Ok(value) or Err("Invalid temperature format".to_string())
+    let result = input.parse::<f32>();
+    
+    match result {
+        Ok(num) => Ok(converter(num)),
+        Err(_) => Err("Invalid temperature format".to_string())
+    }
+}
+
+fn converter(c: f32) -> f32 {
+    c * 9.0 / 5.0 + 32.0
+}
+
+
+// **Expected output:**
+
+// 25.5°C = 77.9°F
+// Error: Invalid temperature format
+// 30.0°C = 86.0°F
+// Error: Invalid temperature format
+// -5.5°C = 22.1°F
