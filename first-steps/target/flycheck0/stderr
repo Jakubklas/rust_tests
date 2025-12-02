@@ -1,12 +1,70 @@
-   0.033058600s  INFO prepare_target{force=false package_id=first-steps v0.1.0 (C:\Users\jklas\rust_tests\first-steps) target="first-steps"}: cargo::core::compiler::fingerprint: stale: changed "C:\\Users\\jklas\\rust_tests\\first-steps\\src\\main.rs"
-   0.033118200s  INFO prepare_target{force=false package_id=first-steps v0.1.0 (C:\Users\jklas\rust_tests\first-steps) target="first-steps"}: cargo::core::compiler::fingerprint:           (vs) "C:\\Users\\jklas\\rust_tests\\first-steps\\target\\debug\\.fingerprint\\first-steps-bb5878d793650bb9\\dep-bin-first-steps"
-   0.033131000s  INFO prepare_target{force=false package_id=first-steps v0.1.0 (C:\Users\jklas\rust_tests\first-steps) target="first-steps"}: cargo::core::compiler::fingerprint:                FileTime { seconds: 13409154503, nanos: 261621400 } < FileTime { seconds: 13409157101, nanos: 75974100 }
-   0.033592200s  INFO prepare_target{force=false package_id=first-steps v0.1.0 (C:\Users\jklas\rust_tests\first-steps) target="first-steps"}: cargo::core::compiler::fingerprint: fingerprint dirty for first-steps v0.1.0 (C:\Users\jklas\rust_tests\first-steps)/Check { test: false }/TargetInner { name: "first-steps", doc: true, ..: with_path("C:\\Users\\jklas\\rust_tests\\first-steps\\src\\main.rs", Edition2024) }
-   0.033634100s  INFO prepare_target{force=false package_id=first-steps v0.1.0 (C:\Users\jklas\rust_tests\first-steps) target="first-steps"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleItem(ChangedFile { reference: "C:\\Users\\jklas\\rust_tests\\first-steps\\target\\debug\\.fingerprint\\first-steps-bb5878d793650bb9\\dep-bin-first-steps", reference_mtime: FileTime { seconds: 13409154503, nanos: 261621400 }, stale: "C:\\Users\\jklas\\rust_tests\\first-steps\\src\\main.rs", stale_mtime: FileTime { seconds: 13409157101, nanos: 75974100 } }))
-   0.035413400s  INFO prepare_target{force=false package_id=first-steps v0.1.0 (C:\Users\jklas\rust_tests\first-steps) target="first-steps"}: cargo::core::compiler::fingerprint: stale: changed "C:\\Users\\jklas\\rust_tests\\first-steps\\src\\main.rs"
-   0.035441800s  INFO prepare_target{force=false package_id=first-steps v0.1.0 (C:\Users\jklas\rust_tests\first-steps) target="first-steps"}: cargo::core::compiler::fingerprint:           (vs) "C:\\Users\\jklas\\rust_tests\\first-steps\\target\\debug\\.fingerprint\\first-steps-0b67236ffcfd1e7a\\dep-test-bin-first-steps"
-   0.035454100s  INFO prepare_target{force=false package_id=first-steps v0.1.0 (C:\Users\jklas\rust_tests\first-steps) target="first-steps"}: cargo::core::compiler::fingerprint:                FileTime { seconds: 13409154503, nanos: 261621400 } < FileTime { seconds: 13409157101, nanos: 75974100 }
-   0.035895000s  INFO prepare_target{force=false package_id=first-steps v0.1.0 (C:\Users\jklas\rust_tests\first-steps) target="first-steps"}: cargo::core::compiler::fingerprint: fingerprint dirty for first-steps v0.1.0 (C:\Users\jklas\rust_tests\first-steps)/Check { test: true }/TargetInner { name: "first-steps", doc: true, ..: with_path("C:\\Users\\jklas\\rust_tests\\first-steps\\src\\main.rs", Edition2024) }
-   0.035926400s  INFO prepare_target{force=false package_id=first-steps v0.1.0 (C:\Users\jklas\rust_tests\first-steps) target="first-steps"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleItem(ChangedFile { reference: "C:\\Users\\jklas\\rust_tests\\first-steps\\target\\debug\\.fingerprint\\first-steps-0b67236ffcfd1e7a\\dep-test-bin-first-steps", reference_mtime: FileTime { seconds: 13409154503, nanos: 261621400 }, stale: "C:\\Users\\jklas\\rust_tests\\first-steps\\src\\main.rs", stale_mtime: FileTime { seconds: 13409157101, nanos: 75974100 } }))
+   0.066938700s  INFO prepare_target{force=false package_id=first-steps v0.1.0 (C:\Users\jklas\rust_tests\first-steps) target="first-steps"}: cargo::core::compiler::fingerprint: fingerprint error for first-steps v0.1.0 (C:\Users\jklas\rust_tests\first-steps)/Check { test: false }/TargetInner { name: "first-steps", doc: true, ..: with_path("C:\\Users\\jklas\\rust_tests\\first-steps\\src\\main.rs", Edition2024) }
+   0.067006100s  INFO prepare_target{force=false package_id=first-steps v0.1.0 (C:\Users\jklas\rust_tests\first-steps) target="first-steps"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\jklas\rust_tests\first-steps\target\debug\.fingerprint\first-steps-6b0549064f8c3330\bin-first-steps`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: std::backtrace::Backtrace::create
+             at /rustc/ed61e7d7e242494fb7057f2657300d9e77bb4fcb/library\std\src\..\..\backtrace\src\backtrace/win64.rs:85:14
+   1: std::backtrace::Backtrace::capture
+             at /rustc/ed61e7d7e242494fb7057f2657300d9e77bb4fcb/library\std\src/backtrace.rs:296:9
+   2: <std::io::error::Error as anyhow::context::ext::StdError>::ext_context::<alloc::string::String>
+   3: cargo_util::paths::read
+   4: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   5: cargo::core::compiler::fingerprint::prepare_target
+   6: cargo::core::compiler::compile
+   7: <cargo::core::compiler::build_runner::BuildRunner>::compile
+   8: cargo::ops::cargo_compile::compile_ws
+   9: cargo::ops::cargo_compile::compile_with_exec
+  10: cargo::ops::cargo_compile::compile
+  11: cargo::commands::check::exec
+  12: <cargo::cli::Exec>::exec
+  13: cargo::cli::main
+  14: cargo::main
+  15: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  16: std::rt::lang_start::<()>::{closure#0}
+  17: std::rt::lang_start_internal
+             at /rustc/ed61e7d7e242494fb7057f2657300d9e77bb4fcb/library\core\src\ops/function.rs:287:21
+  18: main
+  19: __tmainCRTStartup
+  20: mainCRTStartup
+  21: <unknown>
+  22: <unknown>
+   0.091802900s  INFO prepare_target{force=false package_id=first-steps v0.1.0 (C:\Users\jklas\rust_tests\first-steps) target="first-steps"}: cargo::core::compiler::fingerprint: fingerprint error for first-steps v0.1.0 (C:\Users\jklas\rust_tests\first-steps)/Check { test: true }/TargetInner { name: "first-steps", doc: true, ..: with_path("C:\\Users\\jklas\\rust_tests\\first-steps\\src\\main.rs", Edition2024) }
+   0.091863100s  INFO prepare_target{force=false package_id=first-steps v0.1.0 (C:\Users\jklas\rust_tests\first-steps) target="first-steps"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\jklas\rust_tests\first-steps\target\debug\.fingerprint\first-steps-0b4f7300d14d8c9e\test-bin-first-steps`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: std::backtrace::Backtrace::create
+             at /rustc/ed61e7d7e242494fb7057f2657300d9e77bb4fcb/library\std\src\..\..\backtrace\src\backtrace/win64.rs:85:14
+   1: std::backtrace::Backtrace::capture
+             at /rustc/ed61e7d7e242494fb7057f2657300d9e77bb4fcb/library\std\src/backtrace.rs:296:9
+   2: <std::io::error::Error as anyhow::context::ext::StdError>::ext_context::<alloc::string::String>
+   3: cargo_util::paths::read
+   4: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   5: cargo::core::compiler::fingerprint::prepare_target
+   6: cargo::core::compiler::compile
+   7: <cargo::core::compiler::build_runner::BuildRunner>::compile
+   8: cargo::ops::cargo_compile::compile_ws
+   9: cargo::ops::cargo_compile::compile_with_exec
+  10: cargo::ops::cargo_compile::compile
+  11: cargo::commands::check::exec
+  12: <cargo::cli::Exec>::exec
+  13: cargo::cli::main
+  14: cargo::main
+  15: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  16: std::rt::lang_start::<()>::{closure#0}
+  17: std::rt::lang_start_internal
+             at /rustc/ed61e7d7e242494fb7057f2657300d9e77bb4fcb/library\core\src\ops/function.rs:287:21
+  18: main
+  19: __tmainCRTStartup
+  20: mainCRTStartup
+  21: <unknown>
+  22: <unknown>
     Checking first-steps v0.1.0 (C:\Users\jklas\rust_tests\first-steps)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.29s
+error: could not compile `first-steps` (bin "first-steps" test) due to 2 previous errors; 1 warning emitted
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `first-steps` (bin "first-steps") due to 2 previous errors; 1 warning emitted
