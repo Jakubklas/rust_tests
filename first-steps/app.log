@@ -1,0 +1,7 @@
+INFO:Server started
+INFO:Listening on port 8080
+WARN:High memory usage
+ERROR:Database connection failed
+INFO:Request received
+ERROR:Timeout waiting for response
+WARN:Retrying connection
