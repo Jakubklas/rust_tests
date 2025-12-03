@@ -1,1 +1,1 @@
-/Users/jakubklas/rust_tests/first-steps/target/debug/first-steps: /Users/jakubklas/rust_tests/first-steps/src/main.rs
+C:\Users\jklas\rust_tests\first-steps\target\debug\first-steps.exe: C:\Users\jklas\rust_tests\first-steps\src\main.rs
