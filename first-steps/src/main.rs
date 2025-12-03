@@ -1,6 +1,10 @@
+use std::arch::x86_64::_mm_permute_ps;
+use std::fs::read;
+use std::io::Read;
 use std::result;
 
 use tokio::time::{Duration, sleep, timeout};
+use tokio::sync::mpsc;
 
 
 async fn read_sensor(id: u32) -> Result<f32, String> {
@@ -22,24 +26,59 @@ async fn slow_sensor(id: u32) -> f32 {
 }
 
 
+async fn send_hello() {
+    let (tx, mut rx) = mpsc::channel(32);
+
+    tokio::spawn(async move {
+        tx.send("hello").await.unwrap();
+    });
+
+    let msg = rx.recv().await.unwrap();
+    println!("{}", msg);
+}
+
+
+async fn read_sensor_channel(id: u32, tx: mpsc::Sender<(u32, Result<f32, String>)>) {
+    let result = 
+    if id == 3 {
+        Err("This sensor was designed to fail".to_string())
+    } else {
+        let time = if id == 2 { 10 } else { 1 };
+        sleep(Duration::from_secs(time * id as u64)).await;
+
+        Ok(id as f32 * 785.12)
+    };
+
+    tx.send((id, result)).await.unwrap();
+}
+
+
 #[tokio::main]
 async fn main() {  
+    // Create the channel
+    let (tx, mut rx) = mpsc::channel(32);
+
+    // Spawn tasks that will each send data to the channel's receiver
     let sensor_ids = vec![1, 2, 3, 4, 5];
-    let mut handles = vec![];             
+    let mut handles = Vec::new();
+    
+    for id in sensor_ids {
+        
+        let tx_clone = tx.clone();
+        let task = timeout(Duration::from_secs(5), read_sensor_channel(id, tx_clone));
 
-    for i in sensor_ids {
-        let result = timeout(Duration::from_secs(2), slow_sensor(i));
-
-        let h = tokio::spawn(
-            async move { result.await }
-        );                      
-        handles.push(h)
+        let handle = tokio::spawn(async move { task.await });
+        handles.push(handle);
     }
 
-    for h in handles {
-        match h.await.unwrap() {
-            Ok(r) => println!("{}", r),
-            Err(e) => println!("{}", e),
+    drop(tx);
+
+    while let Some((id, val)) = rx.recv().await {
+        
+        match val {
+            Ok(val) => println!("Sensor {} | Value {}", id, val) ,
+            Err(e) => println!("Sensor {} | Value {}", id, e) , 
         }
+
     }
 }
