@@ -1,0 +1,6 @@
+Factory Sensor Report
+=====================
+Sensor 1 (Boiler Room): 15 readings, 4 alerts, 1 errors
+Sensor 3 (Inlet Valve): 19 readings, 0 alerts, 1 errors
+Sensor 2 (Main Tank): 16 readings, 0 alerts, 4 errors
+Sensor 4 (Cooling Unit): 14 readings, 5 alerts, 1 errors
