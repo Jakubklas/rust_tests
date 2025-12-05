@@ -1,69 +1,84 @@
-use serde::{Serialize, Deserialize};
-use tokio::task::LocalSet;
+use bincode::config;
+use serde::{Deserialize, Serialize};
 use std::fs;
-use fastrand;
 
-#[derive(Serialize, Deserialize, Debug)]
-struct WeatherStation {
-    station_id: u32,
+#[derive(Debug, Deserialize, Serialize)]
+struct Device {
+    #[serde(rename = "deviceId")]
+    device_id: u32,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+struct SensorConfig {
+    #[serde(rename = "sensorId")]                   //TODO: I understand that during serialization this saves the attribute's name with camel case - but why not just name it correctly in the struct itself? I don't find this useful at all. It feels like it will just produce missmatch asn confusion when reading/writing during I/O 
+    sensor_id: u32,
+    #[serde(rename = "sensorType")]
+    sensor_type: SensorType,
     location: String,
-    readings: Vec<Reading>,
+    #[serde(default = "default_threshold")]
+    threshold: f32,
+    enabled: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    description: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-struct Reading {
-    timestamp: String,
-    temp: f32,
-    humid: f32,
-    press: f32,
+#[derive(Debug, Deserialize, Serialize)]                //TODO I actually find these derive statements very annoying to add to every single enum or struct or trait- is there nothing more practical than this? 
+#[serde(rename_all = "lowercase")]
+enum SensorType {
+    #[serde(rename_all = "lowercase")]
+    Temperature,
+    Pressure,
+    FlowRate,
 }
+
+
+fn default_threshold() -> f32 {
+    50.0
+}
+
+fn load_config(path: &str) -> Result<SensorConfig, String> {
+    let content = fs::read_to_string(path)
+        .map_err(|e| e.to_string())?;
+
+    let loaded_content: SensorConfig = serde_json::from_str(&content)
+        .map_err(|e| e.to_string())?;
+    
+    Ok(loaded_content)
+}
+
+fn save_config(path: &str, config: SensorConfig) -> Result<(), String> {
+    let json= serde_json::to_string_pretty(&config)
+        .map_err(|e| e.to_string())?;
+
+    let _ = fs::write(path, json)
+        .map_err(|e| e.to_string())?;
+
+    Ok(())
+
+}
+
 
 fn main() {
-    let json_path = r"C:\Users\jklas\rust_tests\first-steps\stuff.json";
-    let bin_path = r"C:\Users\jklas\rust_tests\first-steps\stuff.bin";
-    
-    let mut readings = Vec::new();
-    
-    for i in 0..5 {
-        readings.push( Reading {
-            timestamp: (1092 + i).to_string(),
-            temp: fastrand::f32() * 100.0,
-            humid: fastrand::f32() * 100.0,
-            press: fastrand::f32() * 100.0,
-        })
-    } 
-
-    let station = WeatherStation {
-        station_id: 1,
-        location: "Belfast".to_string(),
-        readings: readings,
+    let path = r"C:\Users\jklas\rust_tests\first-steps\stuff.json";
+    let config = SensorConfig {
+        sensor_id: 1,
+        sensor_type: SensorType::Temperature,
+        location: "Boiler Room".to_string(),
+        threshold: 80.0,
+        enabled: true,
+        description: None,
     };
 
-    // Serialize & save to .json file
-    let json = serde_json::to_string_pretty(&station).unwrap();
-    let _ = fs::write(&json_path, &json).unwrap();
 
-    let binary = bincode::serialize(&station).unwrap();
-    let _ = fs::write(&bin_path, &binary).unwrap();
-
-    // Read the .json contents & desrialize
-    let content = fs::read_to_string(&json_path).unwrap();
-    let loaded_json: WeatherStation = serde_json::from_str(&content).unwrap();
-    println!("Location: {}", loaded_json.location);
-    println!("Station ID: {}", loaded_json.station_id);
-    for r in loaded_json.readings {
-        println!("      Timestamp: {}", r.timestamp);
-        println!("      Temperature: {}", r.temp);
-        println!("      Humidity: {}", r.humid);
-        println!("      Pressure: {}\n\n", r.press);
+    match save_config(&path, config) {
+        Ok(_) => println!("Successfully serialized into {}", &path.to_string()),
+        Err(e) => println!("ERROR Serializing file: {}", e),
     }
 
-    // let loaded_binary: WeatherStation = bincode::deserialize(&content).unwrap();
-    let json_size = fs::metadata(&json_path).unwrap().len();
-    let bin_size = fs::metadata(&bin_path).unwrap().len();
-    println!("\n==== SIZE COMPARISON ====");
-    println!("JSON Bytes: {}", json_size);
-    println!("Binary Bytes: {}", bin_size);
+    match load_config(&path) {
+        Ok(content) => println!("{:?}", content),
+        Err(e) => println!("ERROR Loading file: {}", e),
+    }
 
 }
 

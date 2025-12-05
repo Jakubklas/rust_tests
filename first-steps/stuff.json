@@ -1,36 +1,7 @@
 {
-  "station_id": 1,
-  "location": "Belfast",
-  "readings": [
-    {
-      "timestamp": "1092",
-      "temp": 83.02553,
-      "humid": 23.349083,
-      "press": 16.066408
-    },
-    {
-      "timestamp": "1093",
-      "temp": 55.013752,
-      "humid": 55.58473,
-      "press": 53.230392
-    },
-    {
-      "timestamp": "1094",
-      "temp": 84.59237,
-      "humid": 42.733036,
-      "press": 48.403584
-    },
-    {
-      "timestamp": "1095",
-      "temp": 48.52493,
-      "humid": 3.5564423,
-      "press": 40.3628
-    },
-    {
-      "timestamp": "1096",
-      "temp": 84.59041,
-      "humid": 30.69539,
-      "press": 27.366901
-    }
-  ]
+  "sensorId": 1,
+  "sensorType": "temperature",
+  "location": "Boiler Room",
+  "threshold": 80.0,
+  "enabled": true
 }
