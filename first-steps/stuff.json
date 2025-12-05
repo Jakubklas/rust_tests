@@ -1,0 +1,36 @@
+{
+  "station_id": 1,
+  "location": "Belfast",
+  "readings": [
+    {
+      "timestamp": "1092",
+      "temp": 36.92143,
+      "humid": 5.6485653,
+      "press": 15.278971
+    },
+    {
+      "timestamp": "1093",
+      "temp": 21.005798,
+      "humid": 56.229317,
+      "press": 22.061039
+    },
+    {
+      "timestamp": "1094",
+      "temp": 68.19962,
+      "humid": 67.30154,
+      "press": 65.88175
+    },
+    {
+      "timestamp": "1095",
+      "temp": 19.614613,
+      "humid": 46.55813,
+      "press": 52.137684
+    },
+    {
+      "timestamp": "1096",
+      "temp": 23.120903,
+      "humid": 54.459454,
+      "press": 96.72905
+    }
+  ]
+}

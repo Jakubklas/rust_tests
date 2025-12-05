@@ -39,9 +39,9 @@ impl Sensor {
             SensorType::FlowRate => 500.0,
         };
 
-        for _ in 0..20 {
+        for _ in 0..2000 {
             // Simulate sensor taking time to generate a reading (10% chance of slow response)
-            let wait_time = if fastrand::i32(0..100) > 90 { 2_000 } else { 100 };
+            let wait_time = if fastrand::i32(0..1_00) > 90 { 2_000 } else { 1 };
 
             // Try to generate sensor reading with timeout
             let reading_result = timeout(Duration::from_millis(500), sleep(Duration::from_millis(wait_time))).await;
@@ -81,7 +81,7 @@ impl Sensor {
             }
 
             // Small delay between readings
-            sleep(Duration::from_millis(100)).await;
+            sleep(Duration::from_millis(1)).await;
         }
     }
 }
