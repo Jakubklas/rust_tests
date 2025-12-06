@@ -1,34 +1,51 @@
-use tokio::{io::{AsyncReadExt, AsyncWriteExt}, net::{TcpListener, TcpSocket}};
+use serde::{Deserialize, Serialize};
+use tokio::{io::{AsyncReadExt, AsyncWriteExt}, net::{TcpListener, TcpStream}};
+
+#[derive(Debug, Deserialize, Serialize)]
+struct SensorReading {
+    id: u32,
+    value: f32,
+    unit: String,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+struct ServerResponse {
+    success: bool,
+    msg: String,
+}
+
 
 
 #[tokio::main]
 async fn main() {
-    let listener = TcpListener::bind("localhost:8000").await.unwrap();          //I keep getting the std::net library suggested by my IDE. WHat's the difference? Asynchronous workflows?
-    println!("Server runnning...\n");
+    // Create a listener on local host
+    let listener = TcpListener::bind("localhost:8000").await.unwrap();
+    println!("Server running on localhost:8000...");
 
+    // Create a persistent loop
     loop {
-        let (mut socket, addr) = listener.accept().await.unwrap();          //I understand that listener.accept() accepts a connection request but where is the actual client that sent the request - or why do we accept befreo even sending the request later in the loop?
-        println!("Client connected from address {}", addr);
-
-        tokio::spawn(async move {           // Explain again why we explicitly have to MOVE, not just reference the futures when multi-threading
-            let mut buf = vec![0u8; 1024];      //1MB of space in the 'phone line'? I.e. that's how big the requests can be?
-
-            loop {
-
-                let n = match socket.read(&mut buf).await {
-                    Ok(0) => { println!("Client has disconnected..."); break },
-                    Ok(n) => n,
-                    Err(e) => { println!("Client Error {e}"); break },
-                };
-
-                let received = String::from_utf8_lossy(&buf[..n]);
-                println!("Server has received: {received}");
-
-                // Sending a response back to the client
-                socket.write(b"Hmm, that's pretty mean dude...").await.unwrap();
-            }
+        // Create a 1024 byte buffer vector
+        let mut buff = vec![0u8; 1024];
         
-        });
+        // async accept for requests
+        let (mut socket, adr) = listener.accept().await.unwrap();
+        println!("Got a connection request from {adr}\n");
+        
+        // read the socket to a bytes buffer
+        let n = socket.read(&mut buff).await.unwrap();
+        let n = String::from_utf8_lossy(&buff[..n]);
+        
+        // deserialize the JSON using serde into a class
+        let response: SensorReading = serde_json::from_str(&n).unwrap();
+        
+        // respond the string back
+        let json= serde_json::to_string( &ServerResponse {
+            success: true,
+            msg: format!("READING ==> Sensor ID: {} | Value: {} {}", response.id, response.value, response.unit)  // ✓
+        }).unwrap();
+
+        socket.write_all(json.as_bytes()).await.unwrap();
+
     }
 
 }
