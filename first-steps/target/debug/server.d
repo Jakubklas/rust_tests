@@ -1,1 +1,1 @@
-/Users/jakubklas/rust_tests/first-steps/target/debug/server: /Users/jakubklas/rust_tests/first-steps/src/tcp/server.rs
+/Users/jakubklas/rust_tests/first-steps/target/debug/server: /Users/jakubklas/rust_tests/first-steps/src/sensor_monitoring/libs.rs /Users/jakubklas/rust_tests/first-steps/src/sensor_monitoring/server.rs

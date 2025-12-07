@@ -18,7 +18,7 @@ struct ServerResponse {
 }
 
 async fn send_request(ip: &str) {
-    for _ in 0..50{
+    for _ in 0..50 {
         let mut socket = TcpStream::connect(ip).await.unwrap();
         let mut buffer = vec![0u8; 1024];
 
