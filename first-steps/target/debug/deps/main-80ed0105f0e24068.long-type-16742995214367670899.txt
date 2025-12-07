@@ -1,0 +1,1 @@
+fn(axum::Json<CreateSensor>) -> impl Future<Output = axum::Json<Response>> {create_sensor}: Handler<_, _>

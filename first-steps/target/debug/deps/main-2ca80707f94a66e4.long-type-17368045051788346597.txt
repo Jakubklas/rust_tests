@@ -1,0 +1,2 @@
+fn(axum::extract::Path<u32>) -> impl Future<Output = Json<Result<Sensor, Error>>> {get_sensor}
+fn(axum::extract::Path<u32>) -> impl Future<Output = Json<Result<Sensor, Error>>> {get_sensor}: Handler<_, _>

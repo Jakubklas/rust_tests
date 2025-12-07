@@ -1,25 +1,66 @@
-use tokio::{io::{AsyncReadExt, AsyncWriteExt}, net::{TcpListener}};
+use axum::{Router, routing::get, Json, extract::Path, routing::post};
+use tokio::net::{TcpListener};
+use tokio;
+use serde::{Serialize, Deserialize};
+use fastrand;
+
+async fn hello() -> &'static str {
+    "Hello World from Axum!"
+}
+
+#[derive(Serialize)]
+struct Sensor {
+    id: u32,
+    value: f32,
+}
+
+#[derive(Serialize)]
+struct ServerError {
+    msg: String,
+}
+
+#[derive(Serialize, Deserialize)]
+struct CreateSensor {
+    location: String,
+    value: f32,
+}
+
+#[derive(Serialize)]
+struct Response {
+    success: bool,
+    msg: String,
+}
+
+
+async fn get_sensor(Path(id): Path<u32>) -> Result<Json<Sensor>, Json<ServerError>> {
+    if id > 5 {
+        return Err(Json(ServerError { msg: "That sensor does not exist".to_string() }));
+    }
+
+    Ok(Json(Sensor { id, value: fastrand::f32() * 100.0 }))
+}
+
+async fn create_sensor(Json(payload): Json<CreateSensor>) -> Json<Response> {
+    println!("Received {} with value {}", payload.location, payload.value);
+
+    Json(Response {
+        success: true,
+        msg: format!("Created a sensor in {} with value {}", payload.location, payload.value),
+    })
+}   
 
 
 #[tokio::main]
 async fn main() {
-    let listener = TcpListener::bind("localhost:8000").await.unwrap();          //I keep getting the std::net library suggested by my IDE. WHat's the difference? Asynchronous workflows?
-    println!("Server runnning...\n");
+    let app = Router::new()
+        .route("/", get(hello))
+        .route("/sensor/:id", get(get_sensor))
+        .route("/create_sensor", post(create_sensor));
+    
+    let listener = TcpListener::bind("localhost:8000").await.unwrap();
+    println!("Server running on 'localhost:8000'.");
 
-    loop {
-        let (mut socket, addr) = listener.accept().await.unwrap();          //I understand that listener.accept() accepts a connection request but where is the actual client that sent the request - or why do we accept befreo even sending the request later in the loop?
-        println!("Client connected from address {}", addr);
+    let _ = axum::serve(listener, app).await.unwrap();
 
-        tokio::spawn(async move {           // Explain again why we explicitly have to MOVE, not just reference the futures when multi-threading
-            let mut buf = vec![0u8; 1024];      //1MB of space in the 'phone line'? I.e. that's how big the requests can be?
-
-            let n: usize = socket.read(&mut buf).await.unwrap();     //Did we jsut tell the server socket to read whetever is in the buffer?
-            let received = String::from_utf8_lossy(&buf[..n]);
-            println!("Server has received: {received}");
-
-            // Sending a response back to the client
-            socket.write(b"All good, thanks for invoking this server!").await.unwrap();
-        });
-    }
 
 }
