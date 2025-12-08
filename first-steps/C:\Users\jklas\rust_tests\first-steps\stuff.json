@@ -1,7 +1,0 @@
-{
-  "sensorId": 1,
-  "sensorType": "temperature",
-  "location": "Boiler Room",
-  "threshold": 80.0,
-  "enabled": true
-}

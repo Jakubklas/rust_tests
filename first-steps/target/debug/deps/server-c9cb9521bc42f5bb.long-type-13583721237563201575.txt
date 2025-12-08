@@ -1,0 +1,2 @@
+fn(State<Arc<AppState>>, axum::Json<Reading>) -> impl Future<Output = impl IntoResponse> {add_reading}
+fn(State<Arc<AppState>>, axum::Json<Reading>) -> impl Future<Output = impl IntoResponse> {add_reading}: Handler<_, _>

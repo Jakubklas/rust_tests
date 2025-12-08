@@ -1,0 +1,2 @@
+fn(State<Arc<AppState>>, Json<Reading>) -> impl Future<Output = impl IntoResponse> {add_reading}
+fn(State<Arc<AppState>>, Json<Reading>) -> impl Future<Output = impl IntoResponse> {add_reading}: Handler<_, _>
