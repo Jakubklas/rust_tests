@@ -18,12 +18,12 @@ path = "src/main.rs"
 
 [[bin]]
 name = "server"
-path = "src/sensor_monitoring/server.rs"
+path = "src/api_project/server.rs"
 
 [[bin]]
 name = "client"
-path = "src/sensor_monitoring/client.rs"
+path = "src/api_project/client.rs"
 
 [[bin]]
 name = "libs"
-path = "src/sensor_monitoring/libs.rs"
+path = "src/api_project/libs.rs"

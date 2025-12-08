@@ -58,7 +58,7 @@ async fn delete_reading(State(state): State<Arc<AppState>>, Path(id): Path<u32>)
 
 async fn list_readings(State(state): State<Arc<AppState>>) -> Json<Vec<Reading>> {
     let readings = state.readings.lock().await;      //What is .lock() doing?
-    Json(readings.clone())        //Why do we have to clone? To prevent async race conditions?
+    Json(readings.clone())                           //Why do we have to clone? To prevent async race conditions?
 }
 
 #[tokio::main]
