@@ -197,5 +197,21 @@ async fn health_check() -> impl IntoResponse{
 
 #[tokio::main]
 async fn main() {
-    todo!()
+    let state = Arc::new(
+
+    )
+
+    let app = Router::new()
+        .route("/health", get(health_check))
+        .route("/sesors/:id", get(list_sensors))
+        .route("/sensors/:id", delete(delete_sensor))
+        .route("/sensors", post(create_sensor))
+        .route("/sensors/:id/readings", get(get_readings))
+        .route("/sensors/readings", post(add_reading))
+        .with_state(state)
+        ;
+
+    let listener = TcpListener::bind("localhost:8000").await.unwrap();
+    println!("Server now listening on localhost:8000...");
+    axum::serve(listener, app).await;
 }
