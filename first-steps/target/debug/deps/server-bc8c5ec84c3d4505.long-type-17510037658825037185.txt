@@ -1,0 +1,2 @@
+fn(std::string::String, std::string::String, SensorType) -> impl Future<Output = impl IntoResponse> {create_sensor}
+fn(std::string::String, std::string::String, SensorType) -> impl Future<Output = impl IntoResponse> {create_sensor}: Handler<_, _>

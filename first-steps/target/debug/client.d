@@ -1,1 +1,1 @@
-/Users/jakubklas/rust_tests/first-steps/target/debug/client: /Users/jakubklas/rust_tests/first-steps/src/sensor_monitoring/client.rs /Users/jakubklas/rust_tests/first-steps/src/sensor_monitoring/libs.rs
+C:\Users\jklas\rust_tests\first-steps\target\debug\client.exe: C:\Users\jklas\rust_tests\first-steps\src\api_project\client.rs
