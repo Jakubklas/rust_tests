@@ -1,8 +1,8 @@
 use axum::{Json, Router, extract::{Path, Query, State}, http::StatusCode, response::IntoResponse, routing::{delete, get, post}};
 use serde::{Deserialize, Serialize};
-use tokio::net::TcpListener;
+use tokio::{net::TcpListener, sync::SetOnce};
 use tokio::sync::Mutex;
-use std::sync::Arc;
+use std::{fs, sync::Arc};
 use std::time::{SystemTime, UNIX_EPOCH};
 use std::fs::{read_to_string, write};
 
@@ -57,6 +57,7 @@ struct AppData {
 struct AppState {
     data: Mutex<AppData>,
     file_path: String,
+    operations: Mutex<i32>,
 }
 
 #[derive(Deserialize, Serialize, Clone)]
@@ -81,17 +82,24 @@ fn now() ->u64 {
         .as_secs()
 }
 
-async fn save_to_file(state: &AppState) -> Result<(), String> {
-    // Extracts data from state, serializes as JSON and saves to a file
-    let data = state.data.lock().await;
-    let json = serde_json::to_string_pretty(&*data)
-        .map_err(|e| e.to_string())?;
+async fn _persist_state(state: &Arc<AppState>) -> Result<(), String> {
+    let mut ops = state.operations.lock().await;
 
-    std::fs::write(&state.file_path, json)
-        .map_err(|e| e.to_string())?;
+    if *ops % 3 == 0 {
+        println!("\nSaving state to JSON for persistence...");
 
+        let data = state.data.lock().await;
+        let json = serde_json::to_string_pretty(&*data)
+            .map_err(|e| e.to_string())?;
+
+        std::fs::write(&state.file_path, json)
+            .map_err(|e| e.to_string())?;
+    }
+
+    *ops += 1;
     Ok(())
 }
+
 
 async fn load_from_file() -> Result<AppState, String> {
     let file_path = "src/api_project/state.json";
@@ -107,31 +115,41 @@ async fn load_from_file() -> Result<AppState, String> {
         Ok(AppState {
             data: Mutex::new(data),
             file_path: file_path.to_string(),
+            operations: Mutex::new(0),
         })
 }
 
 // ============ METHODS ============
 
-async fn list_sensors(Query(params): Query<FilterParams>) -> impl IntoResponse {
+async fn list_sensors(
+    State(state): State<Arc<AppState>>,
+    Query(params): Query<FilterParams>
+) -> impl IntoResponse {
     // GET Lists sensors matching filters if provided
-    let state = load_from_file().await.unwrap();
-    let sensors = &state.data.lock().await.sensors;
+    let data = state.data.lock().await;
     
-    let filtered: Vec<Sensor> = sensors.iter()
+    let filtered: Vec<Sensor> = data.sensors.iter()
         .filter(|s| {
             let cond =params.id.map_or(true, |p| s.id == p);
             cond
         })
         .cloned()
         .collect();
+    
+    drop(data);
+    
+    let _ = _persist_state(&state).await
+        .map_err(|e| e.to_string());
 
     (StatusCode::OK, Json(filtered)).into_response()
 }
 
 
-async fn create_sensor(Json(request): Json<CreateSensorRequest>) -> impl IntoResponse {
+async fn create_sensor(
+    State(state): State<Arc<AppState>>,
+    Json(request): Json<CreateSensorRequest>
+) -> impl IntoResponse {
     // POST Creates a new sensor from a JSON payload
-    let state = load_from_file().await.unwrap();
     let mut data = state.data.lock().await;
 
     let sensor = Sensor {
@@ -146,38 +164,45 @@ async fn create_sensor(Json(request): Json<CreateSensorRequest>) -> impl IntoRes
     data.sensors.push(sensor);
     drop(data); // Explicitly drop the lock
 
-    save_to_file(&state).await.unwrap();
-
     let resp = ServerResponse {
         success: true,
         message: "New sensor saved successfully.".to_string(),
     };
 
+    let _ = _persist_state(&state).await
+        .map_err(|e| e.to_string());
+
     (StatusCode::OK, Json(resp)).into_response()
 }
 
 
-async fn delete_sensor(Path(id): Path<u32>) -> impl IntoResponse {
+async fn delete_sensor(
+    State(state): State<Arc<AppState>>,
+    Path(id): Path<u32>
+) -> impl IntoResponse {
     // DELETE Deletes a sensor based on an id if exists
-    let state = load_from_file().await.unwrap();
     let mut data = state.data.lock().await;
 
     data.sensors.retain(|s: &Sensor| s.id != id);
-    drop(data); // Explicitly drop the lock
-
-    save_to_file(&state).await.unwrap();
+    drop(data);
 
     let resp = ServerResponse {
         success: true,
         message: format!("Sensor {id} was removed."),
     };
 
+    let _ = _persist_state(&state).await
+        .map_err(|e| e.to_string());
+
     (StatusCode::OK, Json(resp)).into_response()
 }
 
 
-async fn add_reading(Json(request): Json<CreateReadingRequest>) -> impl IntoResponse {
-    let state = load_from_file().await.unwrap();
+async fn add_reading(
+    State(state): State<Arc<AppState>>,
+    Json(request): Json<CreateReadingRequest>
+) -> impl IntoResponse {
+
     let mut data = state.data.lock().await;
 
     let id_exists = data.sensors.iter().any(|s| s.id == request.sensor_id );
@@ -202,52 +227,75 @@ async fn add_reading(Json(request): Json<CreateReadingRequest>) -> impl IntoResp
     data.readings.push(reading);
     drop(data); // Explicitly drop the lock
 
-    save_to_file(&state).await.unwrap();
-
     let resp = ServerResponse {
         success: true,
         message: format!("New reading added to sensor {}.", request.sensor_id),
     };
 
+    let _ = _persist_state(&state).await
+        .map_err(|e| e.to_string());
+
     (StatusCode::OK, Json(resp)).into_response()
 }
 
 
-async fn get_all_readings() -> impl IntoResponse {
+async fn get_all_readings(State(state): State<Arc<AppState>>) -> impl IntoResponse {
     // GET Lists all readings
-    let state = load_from_file().await.unwrap();
-    let readings = &state.data.lock().await.readings;
-    (StatusCode::OK, Json(readings.clone())).into_response()
+    let data = state.data.lock().await;
+    
+    let readings = data.readings.clone();
+    drop(data);
+
+    let _ = _persist_state(&state).await
+        .map_err(|e| e.to_string());
+    
+    (StatusCode::OK, Json(readings)).into_response()
 }
+
 
 async fn populate_state_file() -> Result<(), String> {
     let path = r"C:\Users\jklas\rust_tests\first-steps\src\api_project\state.json";
-    
-    let data = AppData {
+    let metadata = std::fs::metadata(path)
+          .map_err(|e| e.to_string())?;
+
+    if metadata.len() == 0 {
+        let data = AppData {
             sensors: vec![],
             readings: vec![],
             next_reading_id: 0,
             next_sensor_id: 0,
-    };
+        };
 
-    let json_state = serde_json::to_string_pretty(&data)
+        let json_state = serde_json::to_string_pretty(&data)
         .map_err(|e| e.to_string())?;
 
-    let _ = std::fs::write(path, json_state);
-    
+        let _ = std::fs::write(path, json_state);
+
+        return Ok(());
+    }
 
     Ok(())
 }
 
 
-async fn get_readings_by_sensor(Path(sensor_id): Path<u32>) -> impl IntoResponse {
+async fn get_readings_by_sensor(
+    State(state): State<Arc<AppState>>,
+    Path(sensor_id): Path<u32>
+) -> impl IntoResponse {
     // GET Lists readings for a specific sensor
-    let state = load_from_file().await.unwrap();
-    let readings = &state.data.lock().await.readings;
-    let filtered: Vec<Reading> = readings.iter()
+    let data = state.data.lock().await;
+    let readings = data.readings.clone();
+
+    let filtered: Vec<Reading> = readings.clone().iter()
         .filter(|r| r.sensor_id == sensor_id)
         .cloned()
         .collect();
+
+    drop(data);
+
+    let _ = _persist_state(&state).await
+        .map_err(|e| e.to_string());
+
     (StatusCode::OK, Json(filtered)).into_response()
 }
 
@@ -266,15 +314,15 @@ async fn health_check() -> impl IntoResponse{
 
 #[tokio::main]
 async fn main() {
-    // Shared, locally saved state
-    // let state = load_from_file().await.unwrap();
+    // Initialize state file first
+    println!("Initializing state...");
+    populate_state_file().await.unwrap();
+
+    // Then load the initialized state
+    let loaded_state = load_from_file().await.unwrap();
 
     // Shared in-memory state
-    // let state = Arc::new( AppState {
-    //     data: Mutex::new(data),
-    //     file_path: r"/Users/jakubklas/rust_tests/first-steps/src/api_project/state.json".to_string(),
-    // }
-    // );
+    let state = Arc::new( loaded_state );
 
     let app = Router::new()
         .route("/health", get(health_check))
@@ -284,13 +332,10 @@ async fn main() {
         .route("/readings", get(get_all_readings))
         .route("/sensors/:id/readings", get(get_readings_by_sensor))
         .route("/sensors/readings", post(add_reading))
-        // .with_state(&state)
+        .with_state(state)
         ;
 
     let listener = TcpListener::bind("localhost:8000").await.unwrap();
-    println!("\nClearing latest state...");
-    let _ = populate_state_file().await;
-
     println!("Server now listening on localhost:8000...");
     let _ = axum::serve(listener, app).await;
 }
