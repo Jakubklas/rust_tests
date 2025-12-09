@@ -1,12 +1,9 @@
 use axum::{Json, Router, extract::{Path, Query, State}, http::StatusCode, response::IntoResponse, routing::{delete, get, post}};
 use serde::{Deserialize, Serialize};
-use tokio::{net::TcpListener, sync::SetOnce};
+use tokio::{net::TcpListener};
 use tokio::sync::Mutex;
-use std::{fs, sync::Arc};
+use std::sync::Arc;
 use std::time::{SystemTime, UNIX_EPOCH};
-use std::fs::{read_to_string, write};
-
-
 
 // ============ Readings & Data Structures ============
 
@@ -84,8 +81,12 @@ fn now() ->u64 {
 
 async fn _persist_state(state: &Arc<AppState>) -> Result<(), String> {
     let mut ops = state.operations.lock().await;
+    let should_save= {
+            *ops += 1;
+            *ops % 3 == 0
+    };
 
-    if *ops % 3 == 0 {
+    if should_save {
         println!("\nSaving state to JSON for persistence...");
 
         let data = state.data.lock().await;
@@ -96,7 +97,6 @@ async fn _persist_state(state: &Arc<AppState>) -> Result<(), String> {
             .map_err(|e| e.to_string())?;
     }
 
-    *ops += 1;
     Ok(())
 }
 
