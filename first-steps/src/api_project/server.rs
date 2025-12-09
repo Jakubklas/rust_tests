@@ -220,6 +220,26 @@ async fn get_all_readings() -> impl IntoResponse {
     (StatusCode::OK, Json(readings.clone())).into_response()
 }
 
+async fn populate_state_file() -> Result<(), String> {
+    let path = r"C:\Users\jklas\rust_tests\first-steps\src\api_project\state.json";
+    
+    let data = AppData {
+            sensors: vec![],
+            readings: vec![],
+            next_reading_id: 0,
+            next_sensor_id: 0,
+    };
+
+    let json_state = serde_json::to_string_pretty(&data)
+        .map_err(|e| e.to_string())?;
+
+    let _ = std::fs::write(path, json_state);
+    
+
+    Ok(())
+}
+
+
 async fn get_readings_by_sensor(Path(sensor_id): Path<u32>) -> impl IntoResponse {
     // GET Lists readings for a specific sensor
     let state = load_from_file().await.unwrap();
@@ -268,6 +288,9 @@ async fn main() {
         ;
 
     let listener = TcpListener::bind("localhost:8000").await.unwrap();
+    println!("\nClearing latest state...");
+    let _ = populate_state_file().await;
+
     println!("Server now listening on localhost:8000...");
     let _ = axum::serve(listener, app).await;
 }

@@ -5,195 +5,36 @@
       "name": "Temp-01",
       "location": "Room A",
       "sensor_type": "Thermometer",
-      "created_at": 1765282751
+      "created_at": 1765286926
     },
     {
       "id": 1,
       "name": "Flow-01",
       "location": "Pipe B",
       "sensor_type": "FlowMeter",
-      "created_at": 1765282751
-    },
-    {
-      "id": 3,
-      "name": "Temp-01",
-      "location": "Room A",
-      "sensor_type": "Thermometer",
-      "created_at": 1765282876
-    },
-    {
-      "id": 4,
-      "name": "Flow-01",
-      "location": "Pipe B",
-      "sensor_type": "FlowMeter",
-      "created_at": 1765282876
-    },
-    {
-      "id": 5,
-      "name": "Press-01",
-      "location": "Tank C",
-      "sensor_type": "PressureSensor",
-      "created_at": 1765282876
-    },
-    {
-      "id": 6,
-      "name": "Temp-01",
-      "location": "Room A",
-      "sensor_type": "Thermometer",
-      "created_at": 1765283085
-    },
-    {
-      "id": 7,
-      "name": "Flow-01",
-      "location": "Pipe B",
-      "sensor_type": "FlowMeter",
-      "created_at": 1765283085
-    },
-    {
-      "id": 8,
-      "name": "Press-01",
-      "location": "Tank C",
-      "sensor_type": "PressureSensor",
-      "created_at": 1765283085
-    },
-    {
-      "id": 9,
-      "name": "Temp-01",
-      "location": "Room A",
-      "sensor_type": "Thermometer",
-      "created_at": 1765283323
-    },
-    {
-      "id": 10,
-      "name": "Flow-01",
-      "location": "Pipe B",
-      "sensor_type": "FlowMeter",
-      "created_at": 1765283323
-    },
-    {
-      "id": 11,
-      "name": "Press-01",
-      "location": "Tank C",
-      "sensor_type": "PressureSensor",
-      "created_at": 1765283323
-    },
-    {
-      "id": 12,
-      "name": "Temp-01",
-      "location": "Room A",
-      "sensor_type": "Thermometer",
-      "created_at": 1765283343
-    },
-    {
-      "id": 13,
-      "name": "Flow-01",
-      "location": "Pipe B",
-      "sensor_type": "FlowMeter",
-      "created_at": 1765283343
-    },
-    {
-      "id": 14,
-      "name": "Press-01",
-      "location": "Tank C",
-      "sensor_type": "PressureSensor",
-      "created_at": 1765283343
-    },
-    {
-      "id": 15,
-      "name": "Temp-01",
-      "location": "Room A",
-      "sensor_type": "Thermometer",
-      "created_at": 1765283347
-    },
-    {
-      "id": 16,
-      "name": "Flow-01",
-      "location": "Pipe B",
-      "sensor_type": "FlowMeter",
-      "created_at": 1765283347
-    },
-    {
-      "id": 17,
-      "name": "Press-01",
-      "location": "Tank C",
-      "sensor_type": "PressureSensor",
-      "created_at": 1765283347
+      "created_at": 1765286926
     }
   ],
   "readings": [
     {
       "id": 0,
       "sensor_id": 0,
-      "value": 43.11321,
-      "timestamp": 1765283085
+      "value": 79.970085,
+      "timestamp": 1765286926
     },
     {
       "id": 1,
       "sensor_id": 0,
-      "value": 34.375954,
-      "timestamp": 1765283085
+      "value": 97.339645,
+      "timestamp": 1765286926
     },
     {
       "id": 2,
       "sensor_id": 1,
-      "value": 13.276613,
-      "timestamp": 1765283085
-    },
-    {
-      "id": 3,
-      "sensor_id": 0,
-      "value": 64.3219,
-      "timestamp": 1765283323
-    },
-    {
-      "id": 4,
-      "sensor_id": 0,
-      "value": 40.32979,
-      "timestamp": 1765283323
-    },
-    {
-      "id": 5,
-      "sensor_id": 1,
-      "value": 3.50523,
-      "timestamp": 1765283323
-    },
-    {
-      "id": 6,
-      "sensor_id": 0,
-      "value": 84.17691,
-      "timestamp": 1765283343
-    },
-    {
-      "id": 7,
-      "sensor_id": 0,
-      "value": 6.3231826,
-      "timestamp": 1765283343
-    },
-    {
-      "id": 8,
-      "sensor_id": 1,
-      "value": 59.60139,
-      "timestamp": 1765283343
-    },
-    {
-      "id": 9,
-      "sensor_id": 0,
-      "value": 66.77351,
-      "timestamp": 1765283347
-    },
-    {
-      "id": 10,
-      "sensor_id": 0,
-      "value": 91.84967,
-      "timestamp": 1765283347
-    },
-    {
-      "id": 11,
-      "sensor_id": 1,
-      "value": 43.292236,
-      "timestamp": 1765283347
+      "value": 87.0306,
+      "timestamp": 1765286926
     }
   ],
-  "next_sensor_id": 18,
-  "next_reading_id": 12
+  "next_sensor_id": 3,
+  "next_reading_id": 3
 }
