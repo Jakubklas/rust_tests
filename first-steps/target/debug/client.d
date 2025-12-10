@@ -1,1 +1,1 @@
-C:\Users\jklas\rust_tests\first-steps\target\debug\client.exe: C:\Users\jklas\rust_tests\first-steps\src\api_project\client.rs
+/Users/jakubklas/rust_tests/first-steps/target/debug/client: /Users/jakubklas/rust_tests/first-steps/src/api_project/client.rs

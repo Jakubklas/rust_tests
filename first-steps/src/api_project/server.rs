@@ -102,7 +102,7 @@ async fn _persist_state(state: &Arc<AppState>) -> Result<(), String> {
 
 
 async fn load_from_file() -> Result<AppState, String> {
-    let file_path = "src/api_project/state.json";
+    let file_path = "./src/api_project/state.json";
 
     let content = std::fs::read_to_string(file_path)
             .map_err(|e| e.to_string())?;
@@ -254,7 +254,7 @@ async fn get_all_readings(State(state): State<Arc<AppState>>) -> impl IntoRespon
 
 
 async fn populate_state_file() -> Result<(), String> {
-    let path = r"C:\Users\jklas\rust_tests\first-steps\src\api_project\state.json";
+    let path = "./src/api_project/state.json";
     let metadata = std::fs::metadata(path)
           .map_err(|e| e.to_string())?;
 

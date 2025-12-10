@@ -18,6 +18,10 @@ name = "main"
 path = "src/main.rs"
 
 [[bin]]
+name = "test"
+path = "src/api_project/client_test.rs"
+
+[[bin]]
 name = "server"
 path = "src/api_project/server.rs"
 
